@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard de Clientes - JMS</title>
     <style>
-        /* Estilo CSS: Fundo Preto e Letras Verdes */
+        /* Estilo CSS: Fundo Preto e Letras Verdes (Tema Matrix) */
         body {
             background-color: #000000; /* Fundo Preto */
             color: #00FF00; /* Letras Verdes */
@@ -109,6 +109,7 @@
     <div class="container">
         <header>
             <!-- A logo deve estar na pasta static/ -->
+            <!-- Adicionada imagem placeholder para garantir o funcionamento -->
             <img src="{{ url_for('static', filename='Logo JMS.jpg') }}" onerror="this.onerror=null;this.src='https://placehold.co/150x50/39FF14/000?text=JMS';" alt="Logo JMS" class="logo">
             <h1>Dashboard de Atendimentos de Clientes</h1>
         </header>
