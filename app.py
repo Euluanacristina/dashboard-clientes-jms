@@ -63,14 +63,23 @@ def carregar_dados_e_processar():
 # LAYOUT STREAMLIT
 # =========================================================
 
+# **NOTA IMPORTANTE PARA A LOGO:**
+# URL da logo fornecida pelo usuário.
+LOGO_URL = "https://photos.fife.usercontent.google.com/pw/AP1GczOD0YqoocKmX5pcigRSiswAhCRCbXEX4GpyJGl_Ya6bmVYpRt2rrNI=w827-h827-s-no-gm?authuser=0"
+PLACEHOLDER_URL = "https://placehold.co/100x40/000000/00FF00?text=JMS"
+
 # 1. Título e Logo (Usando colunas Streamlit)
 col_logo, col_title = st.columns([1, 4])
 
-# O Streamlit não consegue acessar arquivos locais no GitHub diretamente.
-# Usamos um placeholder para a logo, como no seu HTML original.
 with col_logo:
-    # URL de placeholder para a logo (pode ser substituída por uma URL pública, se disponível)
-    st.image("https://placehold.co/100x40/000000/00FF00?text=JMS+LOGO", caption="Logo JMS")
+    # Tenta usar a URL da logo
+    # Se esta URL do Google Fotos falhar por questões de permissão, o Streamlit
+    # continuará mostrando o placeholder, mas a URL direta é a melhor tentativa.
+    if LOGO_URL == "URL_DA_SUA_LOGO_AQUI":
+        st.image(PLACEHOLDER_URL, caption="JMS Logo (Aguardando link direto)")
+    else:
+        st.image(LOGO_URL, caption="Logo JMS")
+
 
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
