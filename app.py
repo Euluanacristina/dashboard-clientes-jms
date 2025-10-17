@@ -18,6 +18,11 @@ st.set_page_config(
 # Suprimir avisos de desempacotamento de dados para manter o console limpo.
 warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 
+# Link público direto da imagem no repositório GitHub (Link RAW)
+# Este link aponta para o arquivo 'static/Logo JMS.jpg' no seu repositório.
+LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
+
+
 # Link público direto do Google Sheets no formato CSV
 # A anotação @st.cache_data garante que o Streamlit carregue os dados
 # apenas uma vez (ou quando a URL mudar), tornando o app muito mais rápido.
@@ -63,22 +68,12 @@ def carregar_dados_e_processar():
 # LAYOUT STREAMLIT
 # =========================================================
 
-# **NOTA IMPORTANTE PARA A LOGO:**
-# URL da logo fornecida pelo usuário.
-LOGO_URL = "https://photos.fife.usercontent.google.com/pw/AP1GczOD0YqoocKmX5pcigRSiswAhCRCbXEX4GpyJGl_Ya6bmVYpRt2rrNI=w827-h827-s-no-gm?authuser=0"
-PLACEHOLDER_URL = "https://placehold.co/100x40/000000/00FF00?text=JMS"
-
 # 1. Título e Logo (Usando colunas Streamlit)
 col_logo, col_title = st.columns([1, 4])
 
 with col_logo:
-    # Tenta usar a URL da logo
-    # Se esta URL do Google Fotos falhar por questões de permissão, o Streamlit
-    # continuará mostrando o placeholder, mas a URL direta é a melhor tentativa.
-    if LOGO_URL == "URL_DA_SUA_LOGO_AQUI":
-        st.image(PLACEHOLDER_URL, caption="JMS Logo (Aguardando link direto)")
-    else:
-        st.image(LOGO_URL, caption="Logo JMS")
+    # Usando o link RAW do GitHub para a imagem
+    st.image(LOGO_URL_GITHUB, caption="Logo JMS", width=100)
 
 
 with col_title:
