@@ -21,8 +21,7 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 # Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
-# 🟢 NOVO URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES") 🟢
-# Este link inclui o 'gid' da sua aba de clientes
+# 🟢 URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES") 🟢
 ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 # 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢
 
@@ -31,7 +30,8 @@ ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvT
 @st.cache_data(ttl=60) # TEMPO DE CACHE REDUZIDO PARA 60 SEGUNDOS (1 MINUTO)
 def carregar_dados_e_processar():
     """Busca os dados, processa e retorna a contagem de status."""
-    COLUNA_STATUS = 'STATUS DO ATENDIMENTO'
+    # O nome da coluna de status esperado pelo código
+    COLUNA_STATUS_ESPERADA = 'STATUS DO ATENDIMENTO' 
 
     try:
         # 1. Lê o CSV diretamente da URL da web
@@ -42,23 +42,35 @@ def carregar_dados_e_processar():
             sep=',',
             skipinitialspace=True
         )
+        
+        # =========================================================
+        # CORREÇÃO CRÍTICA: Limpar espaços em branco dos nomes das colunas
+        # Isso corrige problemas de nomeação como 'STATUS DO ATENDIMENTO '
+        df.columns = df.columns.str.strip()
+        # =========================================================
+        
+        # O nome da coluna pode ter sido alterado após a limpeza de espaços
+        COLUNA_STATUS = COLUNA_STATUS_ESPERADA.strip()
+
 
         # =========================================================
         # INÍCIO DA SEÇÃO DE DEBUG (PARA VER SE OS DADOS ESTÃO CHEGANDO)
         # =========================================================
-        st.info(f"DEBUG: DataFrame carregado com {len(df)} linhas antes da limpeza. Exibindo as 5 primeiras linhas:")
+        st.info(f"DEBUG: DataFrame carregado com {len(df)} linhas antes da limpeza.")
+        st.info(f"DEBUG: Colunas encontradas: {list(df.columns)}")
+        st.info(f"DEBUG: Nome da coluna de status esperada: '{COLUNA_STATUS}'")
         st.dataframe(df.head())
         # =========================================================
         # FIM DA SEÇÃO DE DEBUG
         # =========================================================
-
-
+        
+        
         if COLUNA_STATUS not in df.columns:
-            st.error(f"Erro: A coluna '{COLUNA_STATUS}' não foi encontrada na planilha.")
+            st.error(f"Erro: A coluna '{COLUNA_STATUS_ESPERADA}' não foi encontrada na planilha, mesmo após limpar os espaços em branco.")
             return None, 0, 0, 0, 0
         
-        # 2. LIMPEZA RIGOROSA (Para corrigir o bug de contagem de linhas vazias)
-        # Remove linhas onde a coluna de STATUS está vazia (NaN).
+        # 2. LIMPEZA RIGOROSA: Remove linhas onde a coluna de STATUS está vazia (NaN).
+        # É provável que o problema de 81 vs 420 esteja aqui: as linhas estão vazias nesta coluna.
         df.dropna(subset=[COLUNA_STATUS], inplace=True)
         # Remove linhas onde TODAS as colunas estão vazias
         df.dropna(how='all', inplace=True)
