@@ -21,8 +21,9 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 # Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
-# 🟢 NOVO URL DA PLANILHA (CORRIGIDO) 🟢
-ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?output=csv"
+# 🟢 NOVO URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES") 🟢
+# Este link inclui o 'gid' da sua aba de clientes
+ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 # 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢
 
 
@@ -46,7 +47,7 @@ def carregar_dados_e_processar():
             st.error(f"Erro: A coluna '{COLUNA_STATUS}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
         
-        # 2. LIMPEZA RIGOROSA (Para corrigir o bug de contagem)
+        # 2. LIMPEZA RIGOROSA (Para corrigir o bug de contagem de linhas vazias)
         # Remove linhas onde a coluna de STATUS está vazia (NaN).
         df.dropna(subset=[COLUNA_STATUS], inplace=True)
         # Remove linhas onde TODAS as colunas estão vazias
@@ -70,7 +71,7 @@ def carregar_dados_e_processar():
         return resolvido, agendada, sem_retorno, total_clientes
 
     except Exception as e:
-        # Exibe o erro crítico (como o 404)
+        # Exibe o erro crítico (como o 404, caso o link mude novamente)
         st.error(f"Erro Crítico ao carregar os dados: {e}") 
         return None, 0, 0, 0, 0
 
@@ -100,7 +101,9 @@ resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
 
 # 3. Exibe o Total de Clientes
 st.markdown(f"---")
-st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**")
+# Verifica se os dados foram carregados antes de mostrar
+if total_clientes is not None:
+    st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**")
 st.markdown(f"---")
 
 # 4. Exibe os cartões de status (Usando colunas Streamlit)
