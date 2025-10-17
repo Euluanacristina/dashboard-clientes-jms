@@ -21,12 +21,15 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 # Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
+# 🟢 NOVO URL DA PLANILHA (CORRIGIDO) 🟢
+ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?output=csv"
+# 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢
+
 
 # A função de carregamento agora usa um TTL de 60 segundos
 @st.cache_data(ttl=60) # TEMPO DE CACHE REDUZIDO PARA 60 SEGUNDOS (1 MINUTO)
 def carregar_dados_e_processar():
     """Busca os dados, processa e retorna a contagem de status."""
-    ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYMhJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
     COLUNA_STATUS = 'STATUS DO ATENDIMENTO'
 
     try:
@@ -43,19 +46,17 @@ def carregar_dados_e_processar():
             st.error(f"Erro: A coluna '{COLUNA_STATUS}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
         
-        # 2. LIMPEZA MAIS RIGOROSA (Novo)
+        # 2. LIMPEZA RIGOROSA (Para corrigir o bug de contagem)
         # Remove linhas onde a coluna de STATUS está vazia (NaN).
         df.dropna(subset=[COLUNA_STATUS], inplace=True)
-        # Remove linhas onde TODAS as colunas estão vazias (Manter o how='all' por segurança)
+        # Remove linhas onde TODAS as colunas estão vazias
         df.dropna(how='all', inplace=True)
 
 
         # 3. Processamento e Contagem
-        # Converte para string, MAIÚSCULA e remove espaços em branco
         df[COLUNA_STATUS] = df[COLUNA_STATUS].astype(str).str.upper().str.strip()
         
-        # 4. FILTRO DE VALORES VAZIOS APÓS O PROCESSAMENTO (Novo)
-        # Garante que strings vazias ('') não sejam contadas.
+        # 4. FILTRO DE VALORES VAZIOS APÓS O PROCESSAMENTO
         df_limpo = df[df[COLUNA_STATUS] != '']
 
         contagem_status = df_limpo[COLUNA_STATUS].value_counts()
@@ -64,12 +65,13 @@ def carregar_dados_e_processar():
         resolvido = contagem_status.get('RESOLVIDO', 0)
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
-        total_clientes = len(df_limpo) # Usa o DataFrame limpo para o total
+        total_clientes = len(df_limpo) 
 
         return resolvido, agendada, sem_retorno, total_clientes
 
     except Exception as e:
-        st.error(f"Erro Crítico ao carregar os dados: {e}")
+        # Exibe o erro crítico (como o 404)
+        st.error(f"Erro Crítico ao carregar os dados: {e}") 
         return None, 0, 0, 0, 0
 
 # =========================================================
@@ -80,7 +82,6 @@ def carregar_dados_e_processar():
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
 with col_logo:
-    # Usando o link RAW do GitHub para a imagem
     st.image(LOGO_URL_GITHUB, caption="Logo JMS", width=100)
 
 with col_title:
@@ -89,10 +90,8 @@ with col_title:
     st.markdown(f"**Última Atualização:** {data_hora_atual}", help="O cache é limpo automaticamente a cada 1 minuto.")
 
 with col_button:
-    # Adicionamos um botão que limpa o cache e força a recarga
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True) # Espaçamento
+    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
     if st.button("Recarregar Dados", use_container_width=True):
-        # Limpa APENAS o cache desta função (boa prática)
         carregar_dados_e_processar.clear()
         st.rerun() 
 
@@ -135,7 +134,7 @@ if resolvido is not None:
     display_card(col2, "Agendados", agendada, "#FFFF00")
     display_card(col3, "Sem Retorno", sem_retorno, "#FF0000")
 
-# 5. Adiciona um estilo global (Simulando o tema preto/verde do seu HTML)
+# 5. Adiciona um estilo global (Tema Matrix)
 st.markdown(
     """
     <style>
