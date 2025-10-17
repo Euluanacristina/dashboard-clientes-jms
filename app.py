@@ -26,11 +26,11 @@ LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-c
 @st.cache_data(ttl=60) # TEMPO DE CACHE REDUZIDO PARA 60 SEGUNDOS (1 MINUTO)
 def carregar_dados_e_processar():
     """Busca os dados, processa e retorna a contagem de status."""
-    ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
+    ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYMhJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
     COLUNA_STATUS = 'STATUS DO ATENDIMENTO'
 
     try:
-        # Lê o CSV diretamente da URL da web
+        # 1. Lê o CSV diretamente da URL da web
         df = pd.read_csv(
             ARQUIVO_PLANILHA,
             header=0,
@@ -40,21 +40,31 @@ def carregar_dados_e_processar():
         )
 
         if COLUNA_STATUS not in df.columns:
-            # Em caso de erro na coluna, mostra a mensagem e retorna zeros
             st.error(f"Erro: A coluna '{COLUNA_STATUS}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
-
+        
+        # 2. LIMPEZA MAIS RIGOROSA (Novo)
+        # Remove linhas onde a coluna de STATUS está vazia (NaN).
+        df.dropna(subset=[COLUNA_STATUS], inplace=True)
+        # Remove linhas onde TODAS as colunas estão vazias (Manter o how='all' por segurança)
         df.dropna(how='all', inplace=True)
 
-        # Processamento e Contagem
-        df[COLUNA_STATUS] = df[COLUNA_STATUS].astype(str).str.upper().str.strip()
-        contagem_status = df[COLUNA_STATUS].value_counts()
 
-        # EXTRAÇÃO DOS VALORES
+        # 3. Processamento e Contagem
+        # Converte para string, MAIÚSCULA e remove espaços em branco
+        df[COLUNA_STATUS] = df[COLUNA_STATUS].astype(str).str.upper().str.strip()
+        
+        # 4. FILTRO DE VALORES VAZIOS APÓS O PROCESSAMENTO (Novo)
+        # Garante que strings vazias ('') não sejam contadas.
+        df_limpo = df[df[COLUNA_STATUS] != '']
+
+        contagem_status = df_limpo[COLUNA_STATUS].value_counts()
+
+        # 5. EXTRAÇÃO DOS VALORES
         resolvido = contagem_status.get('RESOLVIDO', 0)
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
-        total_clientes = len(df)
+        total_clientes = len(df_limpo) # Usa o DataFrame limpo para o total
 
         return resolvido, agendada, sem_retorno, total_clientes
 
@@ -84,8 +94,6 @@ with col_button:
     if st.button("Recarregar Dados", use_container_width=True):
         # Limpa APENAS o cache desta função (boa prática)
         carregar_dados_e_processar.clear()
-        
-        # AÇÃO CORRIGIDA: Usa st.rerun() em vez de st.experimental_rerun()
         st.rerun() 
 
 # 2. Executa a função de carregamento
