@@ -24,7 +24,7 @@ LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-c
 
 # URL DA PLANILHA - *CONFIRMADO E MANTIDO*
 # Este link deve estar publicado na web como CSV (Valores Separados por Vírgula)
-ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
+ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYjsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
 
 # A função de carregamento agora usa um TTL de 60 segundos
@@ -157,6 +157,13 @@ st.markdown(
     """
     <style>
     /* CORREÇÃO DO PROBLEMA DE TAMANHO: Força o conteúdo principal a ter altura total da tela */
+    
+    /* Garante que o elemento root e o Streamlit App ocupem toda a altura */
+    #root, .stApp {
+        min-height: 100vh;
+        height: 100vh; /* Adiciona height: 100vh para ser mais agressivo */
+    }
+
     .stApp > header {
         /* Garante que o header (topo do Streamlit) não ocupe espaço extra */
         display: none !important;
