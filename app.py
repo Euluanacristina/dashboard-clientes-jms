@@ -22,7 +22,7 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
 
-# A função de carregamento agora aceita 'clear_cache'
+# A função de carregamento agora usa um TTL de 60 segundos
 @st.cache_data(ttl=60) # TEMPO DE CACHE REDUZIDO PARA 60 SEGUNDOS (1 MINUTO)
 def carregar_dados_e_processar():
     """Busca os dados, processa e retorna a contagem de status."""
@@ -40,6 +40,7 @@ def carregar_dados_e_processar():
         )
 
         if COLUNA_STATUS not in df.columns:
+            # Em caso de erro na coluna, mostra a mensagem e retorna zeros
             st.error(f"Erro: A coluna '{COLUNA_STATUS}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
 
@@ -65,12 +66,12 @@ def carregar_dados_e_processar():
 # LAYOUT STREAMLIT
 # =========================================================
 
-# 1. Título e Logo (Usando colunas Streamlit)
-col_logo, col_title, col_button = st.columns([1, 3, 1]) # Adicionamos uma coluna para o botão
+# 1. Título, Logo e Botão de Recarregar
+col_logo, col_title, col_button = st.columns([1, 3, 1])
 
 with col_logo:
     # Usando o link RAW do GitHub para a imagem
-    st.image(LOGO_URL_GITHUB, caption="", width=100)
+    st.image(LOGO_URL_GITHUB, caption="Logo JMS", width=100)
 
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
@@ -78,14 +79,16 @@ with col_title:
     st.markdown(f"**Última Atualização:** {data_hora_atual}", help="O cache é limpo automaticamente a cada 1 minuto.")
 
 with col_button:
-    # Adicionamos um botão que limpa o cache quando clicado
+    # Adicionamos um botão que limpa o cache e força a recarga
     st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True) # Espaçamento
     if st.button("Recarregar Dados", use_container_width=True):
-        st.cache_data.clear() # Esta função limpa o cache de TODAS as funções
-        st.experimental_rerun() # Força o Streamlit a rodar o script novamente
+        # Limpa APENAS o cache desta função (boa prática)
+        carregar_dados_e_processar.clear()
+        
+        # AÇÃO CORRIGIDA: Usa st.rerun() em vez de st.experimental_rerun()
+        st.rerun() 
 
 # 2. Executa a função de carregamento
-# Quando o botão é clicado, o cache é limpo e a função é chamada novamente.
 resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
 
 # 3. Exibe o Total de Clientes
