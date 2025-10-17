@@ -21,16 +21,14 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 # Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
-# 🟢 URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES") 🟢
+# URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES")
 ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
-# 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢
 
 
 # A função de carregamento agora usa um TTL de 60 segundos
 @st.cache_data(ttl=60) # TEMPO DE CACHE REDUZIDO PARA 60 SEGUNDOS (1 MINUTO)
 def carregar_dados_e_processar():
     """Busca os dados, processa e retorna a contagem de status."""
-    # O nome da coluna de status esperado pelo código
     COLUNA_STATUS_ESPERADA = 'STATUS DO ATENDIMENTO' 
 
     try:
@@ -43,40 +41,21 @@ def carregar_dados_e_processar():
             skipinitialspace=True
         )
         
-        # =========================================================
-        # CORREÇÃO: Limpar espaços em branco dos nomes das colunas
+        # Limpa espaços em branco dos nomes das colunas
         df.columns = df.columns.str.strip()
-        # =========================================================
-        
-        # O nome da coluna pode ter sido alterado após a limpeza de espaços
         COLUNA_STATUS = COLUNA_STATUS_ESPERADA.strip()
         
         
-        # 🟢 CORREÇÃO CRÍTICA DO CÁLCULO TOTAL 🟢
-        # Remove linhas onde TODAS as colunas estão vazias (mantém as que têm pelo menos um dado)
+        # 1. CÁLCULO TOTAL: Remove linhas onde TODAS as colunas estão vazias 
         df_base = df.dropna(how='all') 
-        total_clientes = len(df_base) # AGORA CALCULA O TOTAL GERAL (420)
-        # 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢
+        total_clientes = len(df_base)
 
-
-        # =========================================================
-        # INÍCIO DA SEÇÃO DE DEBUG 
-        # =========================================================
-        st.info(f"DEBUG: DataFrame carregado com {len(df)} linhas antes da limpeza.")
-        st.info(f"DEBUG: Colunas encontradas: {list(df.columns)}")
-        st.info(f"DEBUG: Nome da coluna de status esperada: '{COLUNA_STATUS}'")
-        st.dataframe(df.head())
-        # =========================================================
-        # FIM DA SEÇÃO DE DEBUG
-        # =========================================================
-        
         
         if COLUNA_STATUS not in df_base.columns:
             st.error(f"Erro: A coluna '{COLUNA_STATUS_ESPERADA}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
         
-        # 2. LIMPEZA PARA CONTAGEM DE STATUS: Remove linhas onde a coluna de STATUS está vazia (NaN).
-        # Isto garante que a contagem dos cartões (Resolvido, Agendado, etc.) seja feita apenas onde há status.
+        # 2. FILTRO PARA CONTAGEM DE STATUS: Usa apenas linhas que tem status preenchido
         df_status_preenchido = df_base.dropna(subset=[COLUNA_STATUS])
         
 
@@ -92,7 +71,6 @@ def carregar_dados_e_processar():
         resolvido = contagem_status.get('RESOLVIDO', 0)
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
-        # total_clientes AGORA É O VALOR GERAL CALCULADO ACIMA
 
         return resolvido, agendada, sem_retorno, total_clientes
 
@@ -129,7 +107,6 @@ resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
 st.markdown(f"---")
 # Verifica se os dados foram carregados antes de mostrar
 if total_clientes is not None:
-    # A cor da fonte é controlada pelo CSS global para #00FF00 (verde Matrix)
     st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**") 
 st.markdown(f"---")
 
