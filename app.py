@@ -22,7 +22,7 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
 # URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES")
-ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
+ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYjsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
 
 # A função de carregamento agora usa um TTL de 60 segundos
@@ -115,7 +115,7 @@ if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
     # Função auxiliar para estilizar os cartões
-    def display_card(col, title, count, color):
+    def display_card(title, count, color):
         """Cria um cartão com o estilo desejado e retorna a string HTML."""
         html_content = f"""
             <div style='
@@ -132,21 +132,19 @@ if resolvido is not None:
                 <div style='font-size: 4em; font-weight: bold; color: {color};'>{count}</div>
             </div>
             """
-        # Em vez de imprimir diretamente, a função agora retorna o HTML
         return html_content 
 
     # Aplica o estilo "Matrix" com as cores desejadas
-    # ATUALIZAÇÃO: Agora passamos a string HTML diretamente para a coluna com st.markdown
     with col1:
-        html_resolvido = display_card(col1, "Resolvidos", resolvido, "#00FF00")
+        html_resolvido = display_card("Resolvidos", resolvido, "#00FF00")
         st.markdown(html_resolvido, unsafe_allow_html=True)
         
     with col2:
-        html_agendada = display_card(col2, "Agendados", agendada, "#FFFF00")
+        html_agendada = display_card("Agendados", agendada, "#FFFF00")
         st.markdown(html_agendada, unsafe_allow_html=True)
         
     with col3:
-        html_sem_retorno = display_card(col3, "Sem Retorno", sem_retorno, "#FF0000")
+        html_sem_retorno = display_card("Sem Retorno", sem_retorno, "#FF0000")
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
 
 
@@ -154,6 +152,17 @@ if resolvido is not None:
 st.markdown(
     """
     <style>
+    /* ATUALIZAÇÃO: Força o conteúdo principal a ter altura de 100% da viewport (tela) */
+    .stApp > header {
+        /* Garante que o header (topo do Streamlit) não ocupe espaço extra */
+        display: none !important;
+    }
+    
+    .main {
+        /* Ocupa 100% da altura restante da tela */
+        min-height: 100vh;
+    }
+    
     /* Estilo do corpo para simular o tema Matrix (preto e verde) */
     .stApp {
         background-color: #000000;
