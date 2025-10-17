@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 import warnings
+import pytz # <-- NOVA IMPORTAÇÃO AQUI
 
 # =========================================================
 # CONFIGURAÇÃO GERAL E CARREGAMENTO DE DADOS
@@ -45,7 +46,6 @@ def carregar_dados_e_processar():
         df.columns = df.columns.str.strip()
         COLUNA_STATUS = COLUNA_STATUS_ESPERADA.strip()
         
-        
         # 1. CÁLCULO TOTAL: Remove linhas onde TODAS as colunas estão vazias 
         df_base = df.dropna(how='all') 
         total_clientes = len(df_base)
@@ -83,6 +83,12 @@ def carregar_dados_e_processar():
 # LAYOUT STREAMLIT
 # =========================================================
 
+# Define o fuso horário de São Paulo
+SAO_PAULO_TZ = pytz.timezone('America/Sao_Paulo')
+# Obtém a hora atual e converte para o fuso horário de São Paulo
+data_hora_sp = datetime.now(SAO_PAULO_TZ)
+data_hora_formatada = data_hora_sp.strftime('%d/%m/%Y %H:%M:%S')
+
 # 1. Título, Logo e Botão de Recarregar
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
@@ -91,8 +97,8 @@ with col_logo:
 
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
-    data_hora_atual = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
-    st.markdown(f"**Última Atualização:** {data_hora_atual}", help="O cache é limpo automaticamente a cada 1 minuto.")
+    # Usa a data e hora formatadas com o fuso horário de São Paulo
+    st.markdown(f"**Última Atualização:** {data_hora_formatada}", help="O cache é limpo automaticamente a cada 1 minuto.")
 
 with col_button:
     st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
