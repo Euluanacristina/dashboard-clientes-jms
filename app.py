@@ -22,7 +22,7 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 # Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
-# URL DA PLANILHA - *CONFIRMADO E MANTIDO*
+# URL DA PLANILHA - *CONFIRMADO: USE ESTA URL*
 # Este link deve estar publicado na web como CSV (Valores Separados por Vírgula)
 ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
@@ -61,7 +61,8 @@ def carregar_dados_e_processar():
         
 
         # 3. Processamento e Contagem
-        df_status_preenchido[COLUNA_STATUS] = df_status_preenchido[COLUNA_STATUS].astype(str).str.upper().str.strip()
+        # Usamos .loc para evitar o SettingWithCopyWarning
+        df_status_preenchido.loc[:, COLUNA_STATUS] = df_status_preenchido[COLUNA_STATUS].astype(str).str.upper().str.strip()
         
         # 4. FILTRO DE VALORES VAZIOS APÓS O PROCESSAMENTO
         df_limpo = df_status_preenchido[df_status_preenchido[COLUNA_STATUS] != '']
@@ -157,6 +158,13 @@ st.markdown(
     """
     <style>
     /* CORREÇÃO DO PROBLEMA DE TAMANHO: Força o conteúdo principal a ter altura total da tela */
+    
+    /* Garante que o elemento root e o Streamlit App ocupem toda a altura */
+    #root, .stApp {
+        min-height: 100vh;
+        height: 100vh; 
+    }
+
     .stApp > header {
         /* Garante que o header (topo do Streamlit) não ocupe espaço extra */
         display: none !important;
@@ -173,10 +181,16 @@ st.markdown(
         color: #00FF00;
         font-family: 'Consolas', monospace;
     }
-    /* Estilo para títulos e texto do Streamlit */
-    h1, h2, h3, .stMarkdown, .css-1aum9i {
+    /* NOVO: Aumenta a força da cor dos títulos para ficarem mais evidentes */
+    h1, h2, h3 {
+        color: #39FF14 !important; /* Um verde um pouco mais claro/neon */
+        text-shadow: 0 0 5px rgba(57, 255, 20, 0.8);
+    }
+    
+    .stMarkdown, .css-1aum9i {
         color: #00FF00 !important;
     }
+    
     /* Estilo para texto selecionado no Markdown */
     .stMarkdown > p > span {
         color: #00FF00 !important;
@@ -200,6 +214,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-
