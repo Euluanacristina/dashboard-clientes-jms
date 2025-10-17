@@ -11,7 +11,8 @@ import warnings
 st.set_page_config(
     page_title="Dashboard de Clientes JMS",
     page_icon="📊",
-    layout="wide",
+    # layout wide é bom, mas o min-height 100vh no CSS garante o resto
+    layout="wide", 
     initial_sidebar_state="collapsed"
 )
 
@@ -21,8 +22,9 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 # Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
-# URL DA PLANILHA (CORRIGIDO PARA A ABA "CLIENTES")
-ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYjsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
+# URL DA PLANILHA - *CONFIRMADO E MANTIDO*
+# Este link deve estar publicado na web como CSV (Valores Separados por Vírgula)
+ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
 
 # A função de carregamento agora usa um TTL de 60 segundos
@@ -71,11 +73,12 @@ def carregar_dados_e_processar():
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
 
+        # RETORNA TODOS OS VALORES PARA USAR NO LAYOUT
         return resolvido, agendada, sem_retorno, total_clientes
 
     except Exception as e:
-        # Exibe o erro crítico (como o 404, caso o link mude novamente)
-        st.error(f"Erro Crítico ao carregar os dados: {e}") 
+        # EXIBE O ERRO DE REDE/HTTP, O QUE INCLUI O 404
+        st.error(f"Erro Crítico ao carregar os dados: HTTP Error 404 Not Found (ou problema de conexão). Verifique se o link da planilha está ativo e publicado como CSV.")
         return None, 0, 0, 0, 0
 
 # =========================================================
@@ -90,13 +93,13 @@ with col_logo:
 
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
-    # Apenas a data e hora UTC (padrão) são exibidas temporariamente.
     data_hora_atual = datetime.now().strftime('%d/%m/%Y %H:%M:%S')
     st.markdown(f"**Última Atualização:** {data_hora_atual}", help="O cache é limpo automaticamente a cada 1 minuto.")
 
 with col_button:
     st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
     if st.button("Recarregar Dados", use_container_width=True):
+        # Limpa o cache para forçar uma nova leitura da planilha
         carregar_dados_e_processar.clear()
         st.rerun() 
 
@@ -111,6 +114,7 @@ if total_clientes is not None:
 st.markdown(f"---")
 
 # 4. Exibe os cartões de status (Usando colunas Streamlit)
+# Só exibe se a variável 'resolvido' não for None, indicando sucesso no carregamento
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
@@ -152,14 +156,14 @@ if resolvido is not None:
 st.markdown(
     """
     <style>
-    /* ATUALIZAÇÃO: Força o conteúdo principal a ter altura de 100% da viewport (tela) */
+    /* CORREÇÃO DO PROBLEMA DE TAMANHO: Força o conteúdo principal a ter altura total da tela */
     .stApp > header {
         /* Garante que o header (topo do Streamlit) não ocupe espaço extra */
         display: none !important;
     }
     
     .main {
-        /* Ocupa 100% da altura restante da tela */
+        /* Ocupa 100% da altura restante da tela (resolve o problema do espaço preto) */
         min-height: 100vh;
     }
     
