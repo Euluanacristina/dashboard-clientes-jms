@@ -3,38 +3,29 @@ import pandas as pd
 from datetime import datetime
 import warnings
 
-# =========================================================
-# CONFIGURAÇÃO GERAL E CARREGAMENTO DE DADOS
-# =========================================================
 
-# Configuração da página Streamlit
 st.set_page_config(
     page_title="Dashboard de Clientes JMS",
     page_icon="📊",
-    # layout wide é bom, mas o min-height 100vh no CSS garante o resto
     layout="wide", 
     initial_sidebar_state="collapsed"
 )
 
-# Suprimir avisos de desempacotamento de dados para manter o console limpo.
 warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 
-# Link público direto da imagem no repositório GitHub (Link RAW)
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
 
-# URL DA PLANILHA - *CONFIRMADO: USE ESTA URL*
-# Este link deve estar publicado na web como CSV (Valores Separados por Vírgula)
+
 ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
 
-# A função de carregamento agora usa um TTL de 60 segundos
-@st.cache_data(ttl=60) # TEMPO DE CACHE REDUZIDO PARA 60 SEGUNDOS (1 MINUTO)
+
+@st.cache_data(ttl=60) # TEMPO DE CACHE 60 SEGUNDOS (1 MINUTO)
 def carregar_dados_e_processar():
     """Busca os dados, processa e retorna a contagem de status."""
     COLUNA_STATUS_ESPERADA = 'STATUS DO ATENDIMENTO' 
 
     try:
-        # 1. Lê o CSV diretamente da URL da web
         df = pd.read_csv(
             ARQUIVO_PLANILHA,
             header=0,
@@ -60,11 +51,9 @@ def carregar_dados_e_processar():
         df_status_preenchido = df_base.dropna(subset=[COLUNA_STATUS])
         
 
-        # 3. Processamento e Contagem
-        # Usamos .loc para evitar o SettingWithCopyWarning
         df_status_preenchido.loc[:, COLUNA_STATUS] = df_status_preenchido[COLUNA_STATUS].astype(str).str.upper().str.strip()
         
-        # 4. FILTRO DE VALORES VAZIOS APÓS O PROCESSAMENTO
+
         df_limpo = df_status_preenchido[df_status_preenchido[COLUNA_STATUS] != '']
 
         contagem_status = df_limpo[COLUNA_STATUS].value_counts()
@@ -82,15 +71,12 @@ def carregar_dados_e_processar():
         st.error(f"Erro Crítico ao carregar os dados: HTTP Error 404 Not Found (ou problema de conexão). Verifique se o link da planilha está ativo e publicado como CSV.")
         return None, 0, 0, 0, 0
 
-# =========================================================
-# LAYOUT STREAMLIT
-# =========================================================
 
-# 1. Título, Logo e Botão de Recarregar
+# Logo e Botão de Recarregar
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
 with col_logo:
-    st.image(LOGO_URL_GITHUB, caption="Logo JMS", width=100)
+    st.image(LOGO_URL_GITHUB, caption="", width=100)
 
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
@@ -114,8 +100,7 @@ if total_clientes is not None:
     st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**") 
 st.markdown(f"---")
 
-# 4. Exibe os cartões de status (Usando colunas Streamlit)
-# Só exibe se a variável 'resolvido' não for None, indicando sucesso no carregamento
+
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
@@ -157,31 +142,26 @@ if resolvido is not None:
 st.markdown(
     """
     <style>
-    /* CORREÇÃO DO PROBLEMA DE TAMANHO: Força o conteúdo principal a ter altura total da tela */
-    
-    /* Garante que o elemento root e o Streamlit App ocupem toda a altura */
+
     #root, .stApp {
         min-height: 100vh;
         height: 100vh; 
     }
 
     .stApp > header {
-        /* Garante que o header (topo do Streamlit) não ocupe espaço extra */
+
         display: none !important;
     }
     
     .main {
-        /* Ocupa 100% da altura restante da tela (resolve o problema do espaço preto) */
         min-height: 100vh;
     }
     
-    /* Estilo do corpo para simular o tema Matrix (preto e verde) */
     .stApp {
         background-color: #000000;
         color: #00FF00;
         font-family: 'Consolas', monospace;
     }
-    /* NOVO: Aumenta a força da cor dos títulos para ficarem mais evidentes */
     h1, h2, h3 {
         color: #39FF14 !important; /* Um verde um pouco mais claro/neon */
         text-shadow: 0 0 5px rgba(57, 255, 20, 0.8);
@@ -191,7 +171,6 @@ st.markdown(
         color: #00FF00 !important;
     }
     
-    /* Estilo para texto selecionado no Markdown */
     .stMarkdown > p > span {
         color: #00FF00 !important;
     }
@@ -214,3 +193,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
