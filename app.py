@@ -151,10 +151,6 @@ if resolvido is not None:
         html_sem_retorno = display_card("Sem Retorno", sem_retorno, "#FF0000")
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
 
-#root, .stApp {
-        min-height: 100vh;
-        height: 100vh; /* Adiciona height: 100vh para ser mais agressivo */
-    }
 
 # 5. Adiciona um estilo global (Tema Matrix)
 st.markdown(
@@ -204,5 +200,6 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
 
 
