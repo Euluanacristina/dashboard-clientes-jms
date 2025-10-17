@@ -43,6 +43,16 @@ def carregar_dados_e_processar():
             skipinitialspace=True
         )
 
+        # =========================================================
+        # INÍCIO DA SEÇÃO DE DEBUG (PARA VER SE OS DADOS ESTÃO CHEGANDO)
+        # =========================================================
+        st.info(f"DEBUG: DataFrame carregado com {len(df)} linhas antes da limpeza. Exibindo as 5 primeiras linhas:")
+        st.dataframe(df.head())
+        # =========================================================
+        # FIM DA SEÇÃO DE DEBUG
+        # =========================================================
+
+
         if COLUNA_STATUS not in df.columns:
             st.error(f"Erro: A coluna '{COLUNA_STATUS}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
