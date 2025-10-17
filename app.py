@@ -44,17 +44,23 @@ def carregar_dados_e_processar():
         )
         
         # =========================================================
-        # CORREÇÃO CRÍTICA: Limpar espaços em branco dos nomes das colunas
-        # Isso corrige problemas de nomeação como 'STATUS DO ATENDIMENTO '
+        # CORREÇÃO: Limpar espaços em branco dos nomes das colunas
         df.columns = df.columns.str.strip()
         # =========================================================
         
         # O nome da coluna pode ter sido alterado após a limpeza de espaços
         COLUNA_STATUS = COLUNA_STATUS_ESPERADA.strip()
+        
+        
+        # 🟢 CORREÇÃO CRÍTICA DO CÁLCULO TOTAL 🟢
+        # Remove linhas onde TODAS as colunas estão vazias (mantém as que têm pelo menos um dado)
+        df_base = df.dropna(how='all') 
+        total_clientes = len(df_base) # AGORA CALCULA O TOTAL GERAL (420)
+        # 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢 🟢
 
 
         # =========================================================
-        # INÍCIO DA SEÇÃO DE DEBUG (PARA VER SE OS DADOS ESTÃO CHEGANDO)
+        # INÍCIO DA SEÇÃO DE DEBUG 
         # =========================================================
         st.info(f"DEBUG: DataFrame carregado com {len(df)} linhas antes da limpeza.")
         st.info(f"DEBUG: Colunas encontradas: {list(df.columns)}")
@@ -65,22 +71,20 @@ def carregar_dados_e_processar():
         # =========================================================
         
         
-        if COLUNA_STATUS not in df.columns:
-            st.error(f"Erro: A coluna '{COLUNA_STATUS_ESPERADA}' não foi encontrada na planilha, mesmo após limpar os espaços em branco.")
+        if COLUNA_STATUS not in df_base.columns:
+            st.error(f"Erro: A coluna '{COLUNA_STATUS_ESPERADA}' não foi encontrada na planilha.")
             return None, 0, 0, 0, 0
         
-        # 2. LIMPEZA RIGOROSA: Remove linhas onde a coluna de STATUS está vazia (NaN).
-        # É provável que o problema de 81 vs 420 esteja aqui: as linhas estão vazias nesta coluna.
-        df.dropna(subset=[COLUNA_STATUS], inplace=True)
-        # Remove linhas onde TODAS as colunas estão vazias
-        df.dropna(how='all', inplace=True)
-
+        # 2. LIMPEZA PARA CONTAGEM DE STATUS: Remove linhas onde a coluna de STATUS está vazia (NaN).
+        # Isto garante que a contagem dos cartões (Resolvido, Agendado, etc.) seja feita apenas onde há status.
+        df_status_preenchido = df_base.dropna(subset=[COLUNA_STATUS])
+        
 
         # 3. Processamento e Contagem
-        df[COLUNA_STATUS] = df[COLUNA_STATUS].astype(str).str.upper().str.strip()
+        df_status_preenchido[COLUNA_STATUS] = df_status_preenchido[COLUNA_STATUS].astype(str).str.upper().str.strip()
         
         # 4. FILTRO DE VALORES VAZIOS APÓS O PROCESSAMENTO
-        df_limpo = df[df[COLUNA_STATUS] != '']
+        df_limpo = df_status_preenchido[df_status_preenchido[COLUNA_STATUS] != '']
 
         contagem_status = df_limpo[COLUNA_STATUS].value_counts()
 
@@ -88,7 +92,7 @@ def carregar_dados_e_processar():
         resolvido = contagem_status.get('RESOLVIDO', 0)
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
-        total_clientes = len(df_limpo) 
+        # total_clientes AGORA É O VALOR GERAL CALCULADO ACIMA
 
         return resolvido, agendada, sem_retorno, total_clientes
 
@@ -125,7 +129,8 @@ resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
 st.markdown(f"---")
 # Verifica se os dados foram carregados antes de mostrar
 if total_clientes is not None:
-    st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**")
+    # A cor da fonte é controlada pelo CSS global para #00FF00 (verde Matrix)
+    st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**") 
 st.markdown(f"---")
 
 # 4. Exibe os cartões de status (Usando colunas Streamlit)
