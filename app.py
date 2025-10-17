@@ -3,11 +3,6 @@ import pandas as pd
 from datetime import datetime
 import warnings
 
-# =========================================================
-# CONFIGURAÇÃO GERAL E CARREGAMENTO DE DADOS
-# =========================================================
-
-# Configuração da página Streamlit
 st.set_page_config(
     page_title="Dashboard de Clientes JMS",
     page_icon="📊",
@@ -64,16 +59,12 @@ def carregar_dados_e_processar():
         st.error(f"Erro Crítico ao carregar os dados: {e}")
         return None, 0, 0, 0, 0
 
-# =========================================================
-# LAYOUT STREAMLIT
-# =========================================================
 
-# 1. Título e Logo (Usando colunas Streamlit)
 col_logo, col_title = st.columns([1, 4])
 
 with col_logo:
     # Usando o link RAW do GitHub para a imagem
-    st.image(LOGO_URL_GITHUB, caption="Logo JMS", width=100)
+    st.image(LOGO_URL_GITHUB, caption="", width=100)
 
 
 with col_title:
@@ -144,3 +135,4 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
