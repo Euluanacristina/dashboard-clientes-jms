@@ -161,7 +161,18 @@ st.markdown(
     .main {
         min-height: 100vh;
     }
+     .stApp {
+        background-color: #000000;
+        color: #00FF00;
+        font-family: 'Consolas', monospace;
+    }
+
+    h1, h2, h3 {
+        color: #39FF14 !important;
+        text-shadow: 0 0 5px rgba(57, 255, 20, 0.8);
+    }
 )
+
 
 
 
