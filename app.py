@@ -189,6 +189,14 @@ st.markdown(
         box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
         transition: all 0.2s;
     }
+ .stButton>button:hover {
+        background-color: #39FF14;
+        color: #000000;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 1.0);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
 )
 
 
