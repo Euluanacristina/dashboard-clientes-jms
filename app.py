@@ -99,6 +99,27 @@ with col_button:
         st.rerun()
 
 # ------------------------------------------------------------
+# BOTÃO "CLIENTES SEM RETORNO"
+# ------------------------------------------------------------
+st.markdown("<br>", unsafe_allow_html=True)
+if "mostrar_sem_retorno" not in st.session_state:
+    st.session_state.mostrar_sem_retorno = False
+
+# Botão para mostrar/ocultar painel
+if st.button("📋 Clientes Sem Retorno", use_container_width=True): # <--- ESTE BOTÃO ESTÁ FORA DA COLUNA
+    st.session_state.mostrar_sem_retorno = not st.session_state.mostrar_sem_retorno
+
+# ------------------------------------------------------------
+# EXIBIÇÃO DOS DADOS (O restante do código permanece o mesmo)
+# ------------------------------------------------------------
+resolvido, agendada, sem_retorno, total_clientes, df_limpo, df_sem_retorno = carregar_dados_e_processar()
+
+st.markdown("---")
+if total_clientes:
+    st.markdown(f"### Total de Clientes na Planilha: **{total_clientes}**")
+st.markdown("---")
+
+# ------------------------------------------------------------
 # EXIBIÇÃO DOS DADOS
 # ------------------------------------------------------------
 resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
@@ -142,6 +163,7 @@ if resolvido is not None:
     with col3:
         html_sem_retorno = display_card("Sem Retorno", sem_retorno, "#FF0000")
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
+
 
 
 
