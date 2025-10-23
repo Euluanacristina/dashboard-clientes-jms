@@ -171,7 +171,26 @@ st.markdown(
         color: #39FF14 !important;
         text-shadow: 0 0 5px rgba(57, 255, 20, 0.8);
     }
+    .stMarkdown, .css-1aum9i {
+        color: #00FF00 !important;
+    }
+
+    .stMarkdown > p > span {
+        color: #00FF00 !important;
+    }
+
+    /* Estiliza o botão Recarregar */
+    .stButton>button {
+        background-color: #00FF00;
+        color: #000000;
+        border: 1px solid #00FF00;
+        font-weight: bold;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        transition: all 0.2s;
+    }
 )
+
 
 
 
