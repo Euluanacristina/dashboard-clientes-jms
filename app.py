@@ -143,4 +143,18 @@ if resolvido is not None:
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
 
 
+# ------------------------------------------------------------
+# ESTILO GLOBAL (TEMA MATRIX)
+# ------------------------------------------------------------
+st.markdown(
+    """
+    <style>
+
+    #root, .stApp {
+        min-height: 100vh;
+        height: 100vh; 
+    }
+)
+
+
 
