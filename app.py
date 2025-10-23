@@ -109,6 +109,30 @@ if "mostrar_sem_retorno" not in st.session_state:
 if st.button("📋 Clientes Sem Retorno", use_container_width=True): # <--- ESTE BOTÃO ESTÁ FORA DA COLUNA
     st.session_state.mostrar_sem_retorno = not st.session_state.mostrar_sem_retorno
 
+# Exibir painel se ativo
+
+if st.session_state.mostrar_sem_retorno:
+
+    st.markdown("### 🧾 Lista de Clientes Sem Retorno:")
+# Verifica se há coluna de nome
+
+    col_nome = None
+
+    for nome_coluna in df_sem_retorno.columns:
+
+        if 'nome' in nome_coluna.lower():
+
+            col_nome = nome_coluna
+
+            break
+
+ if col_nome:
+
+        st.dataframe(df_sem_retorno[[col_nome]], use_container_width=True, hide_index=True)
+
+    else:
+
+        st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
 # ------------------------------------------------------------
 # EXIBIÇÃO DOS DADOS (O restante do código permanece o mesmo)
 # ------------------------------------------------------------
@@ -163,6 +187,7 @@ if resolvido is not None:
     with col3:
         html_sem_retorno = display_card("Sem Retorno", sem_retorno, "#FF0000")
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
+
 
 
 
