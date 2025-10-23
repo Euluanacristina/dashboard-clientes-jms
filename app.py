@@ -73,7 +73,6 @@ def carregar_dados_e_processar():
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
 with col_logo:
-    # Linha que carrega o logo (foi mantida, pois o problema deve ser no acesso ao link)
     st.image(LOGO_URL_GITHUB, caption="", width=100)
 
 with col_title:
@@ -114,7 +113,7 @@ st.markdown("---")
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
-    # FUNÇÃO CORRIGIDA COM FONTE SEM NEGRITO
+    # FUNÇÃO CORRIGIDA COM FONTE SEM NEGRITO (font-weight: normal;)
     def display_card(title, count, color):
         # Mapeia as cores hex para seus valores RGB para criar um efeito de brilho (glow)
         color_map = {
@@ -143,7 +142,7 @@ if resolvido is not None:
                 <h2 style='color: {color}; margin-top: 0; font-family: sans-serif;'>{title}</h2>
                 <div style='
                     font-size: 3.2em;
-                    font-weight: normal; 
+                    font-weight: normal; /* ALTERADO: Removido o negrito */
                     color: {color};
                     line-height: 1.2;
                 '>{count}</div>
@@ -181,3 +180,4 @@ if st.session_state.mostrar_sem_retorno:
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
+
