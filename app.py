@@ -26,6 +26,7 @@ ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvT
 @st.cache_data(ttl=60)  # Cache de 1 minuto
 def carregar_dados_e_processar():
     COLUNA_STATUS_ESPERADA = 'STATUS DO ATENDIMENTO'
+    COLUNA_NOME_ESPERADA = 'NOME'
 
     try:
         df = pd.read_csv(
@@ -35,40 +36,39 @@ def carregar_dados_e_processar():
             sep=',',
             skipinitialspace=True
         )
-        
-        # Limpa espaços e ajusta colunas
+
         df.columns = df.columns.str.strip()
-        COLUNA_STATUS = COLUNA_STATUS_ESPERADA.strip()
-        
-        # Remove linhas completamente vazias
         df_base = df.dropna(how='all')
+
         total_clientes = len(df_base)
 
-        if COLUNA_STATUS not in df_base.columns:
+        if COLUNA_STATUS_ESPERADA not in df_base.columns:
             st.error(f"Erro: A coluna '{COLUNA_STATUS_ESPERADA}' não foi encontrada na planilha.")
-            return None, 0, 0, 0, 0
-        
-        # Mantém apenas linhas com status preenchido
-        df_status_preenchido = df_base.dropna(subset=[COLUNA_STATUS])
-        df_status_preenchido.loc[:, COLUNA_STATUS] = (
-            df_status_preenchido[COLUNA_STATUS]
+            return None, None, 0, 0, 0, 0
+
+        df_status_preenchido = df_base.dropna(subset=[COLUNA_STATUS_ESPERADA])
+        df_status_preenchido.loc[:, COLUNA_STATUS_ESPERADA] = (
+            df_status_preenchido[COLUNA_STATUS_ESPERADA]
             .astype(str)
             .str.upper()
             .str.strip()
         )
 
-        df_limpo = df_status_preenchido[df_status_preenchido[COLUNA_STATUS] != '']
-        contagem_status = df_limpo[COLUNA_STATUS].value_counts()
+        df_limpo = df_status_preenchido[df_status_preenchido[COLUNA_STATUS_ESPERADA] != '']
+        contagem_status = df_limpo[COLUNA_STATUS_ESPERADA].value_counts()
 
         resolvido = contagem_status.get('RESOLVIDO', 0)
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
 
-        return resolvido, agendada, sem_retorno, total_clientes
+        # Filtrar apenas os clientes com "SEM RETORNO"
+        df_sem_retorno = df_limpo[df_limpo[COLUNA_STATUS_ESPERADA] == 'SEM RETORNO']
+
+        return df_sem_retorno, df_limpo, resolvido, agendada, sem_retorno, total_clientes
 
     except Exception as e:
         st.error("Erro Crítico ao carregar os dados: verifique se o link da planilha está ativo e publicado como CSV.")
-        return None, 0, 0, 0, 0
+        return None, None, 0, 0, 0, 0
 
 
 # ------------------------------------------------------------
@@ -82,7 +82,6 @@ with col_logo:
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
 
-   
     fuso_sp = pytz.timezone("America/Sao_Paulo")
     data_hora_sp = datetime.now(fuso_sp).strftime('%d/%m/%Y %H:%M:%S')
 
@@ -100,7 +99,7 @@ with col_button:
 # ------------------------------------------------------------
 # EXIBIÇÃO DOS DADOS
 # ------------------------------------------------------------
-resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
+df_sem_retorno, df_limpo, resolvido, agendada, sem_retorno, total_clientes = carregar_dados_e_processar()
 
 st.markdown("---")
 
@@ -131,23 +130,28 @@ if resolvido is not None:
         return html_content 
 
     with col1:
-        html_resolvido = display_card("Resolvidos", resolvido, "#00FF00")
-        st.markdown(html_resolvido, unsafe_allow_html=True)
-        
+        st.markdown(display_card("Resolvidos", resolvido, "#00FF00"), unsafe_allow_html=True)
     with col2:
-        html_agendada = display_card("Agendados", agendada, "#FFFF00")
-        st.markdown(html_agendada, unsafe_allow_html=True)
-        
+        st.markdown(display_card("Agendados", agendada, "#FFFF00"), unsafe_allow_html=True)
     with col3:
-        html_sem_retorno = display_card("Sem Retorno", sem_retorno, "#FF0000")
-        st.markdown(html_sem_retorno, unsafe_allow_html=True)
+        st.markdown(display_card("Sem Retorno", sem_retorno, "#FF0000"), unsafe_allow_html=True)
 
+# ------------------------------------------------------------
+# EXIBIR LISTA DE CLIENTES "SEM RETORNO"
+# ------------------------------------------------------------
+st.markdown("---")
+st.subheader("📞 Clientes com Status: *SEM RETORNO*")
 
-
-
-
-
-
-
-
-
+if df_sem_retorno is not None and not df_sem_retorno.empty:
+    colunas_disponiveis = [c for c in ['NOME', 'TELEFONE', 'ENDEREÇO', 'OBSERVAÇÃO', 'DATA'] if c in df_sem_retorno.columns]
+    
+    if 'NOME' in df_sem_retorno.columns:
+        st.dataframe(
+            df_sem_retorno[colunas_disponiveis].reset_index(drop=True),
+            use_container_width=True,
+            hide_index=True
+        )
+    else:
+        st.warning("A coluna 'NOME' não foi encontrada na planilha.")
+else:
+    st.info("Nenhum cliente com status 'SEM RETORNO' encontrado no momento.")
