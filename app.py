@@ -16,7 +16,10 @@ st.set_page_config(
 
 warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 
-LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg"
+# CORREÇÃO: Usando o caminho local 'static/Logo JMS.jpg' (mais robusto)
+LOGO_PATH = "static/Logo JMS.jpg"
+# O link do GitHub pode ser removido ou mantido, mas não será usado abaixo
+LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg" 
 ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
 # ------------------------------------------------------------
@@ -73,7 +76,8 @@ def carregar_dados_e_processar():
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
 with col_logo:
-    st.image(LOGO_URL_GITHUB, caption="", width=100)
+    # CORREÇÃO: Usando o caminho local da pasta static
+    st.image(LOGO_PATH, caption="", width=100)
 
 with col_title:
     st.title("Painel de Atendimentos de Clientes")
@@ -113,7 +117,7 @@ st.markdown("---")
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
-    # FUNÇÃO CORRIGIDA COM FONTE SEM NEGRITO (font-weight: normal;)
+    # FUNÇÃO display_card com estilo final
     def display_card(title, count, color):
         # Mapeia as cores hex para seus valores RGB para criar um efeito de brilho (glow)
         color_map = {
@@ -142,7 +146,7 @@ if resolvido is not None:
                 <h2 style='color: {color}; margin-top: 0; font-family: sans-serif;'>{title}</h2>
                 <div style='
                     font-size: 3.2em;
-                    font-weight: normal; /* ALTERADO: Removido o negrito */
+                    font-weight: normal; 
                     color: {color};
                     line-height: 1.2;
                 '>{count}</div>
@@ -180,4 +184,3 @@ if st.session_state.mostrar_sem_retorno:
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
-
