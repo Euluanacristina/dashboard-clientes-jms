@@ -113,7 +113,7 @@ st.markdown("---")
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
-    # FUNÇÃO CORRIGIDA COM NOVO ESTILO (FONTE E BRILHO)
+    # FUNÇÃO CORRIGIDA COM FONTE SEM NEGRITO (font-weight: normal;)
     def display_card(title, count, color):
         # Mapeia as cores hex para seus valores RGB para criar um efeito de brilho (glow)
         color_map = {
@@ -121,7 +121,7 @@ if resolvido is not None:
             "#FFFF00": "255, 255, 0",
             "#FF0000": "255, 0, 0",
         }
-        rgb_color = color_map.get(color, "255, 255, 255") # Fallback para branco
+        rgb_color = color_map.get(color, "255, 255, 255")
         shadow_color = f'rgba({rgb_color}, 0.6)'
 
         # Define a lista de fontes para garantir um estilo digital/monospace
@@ -142,7 +142,7 @@ if resolvido is not None:
                 <h2 style='color: {color}; margin-top: 0; font-family: sans-serif;'>{title}</h2>
                 <div style='
                     font-size: 3.2em;
-                    font-weight: 900; /* Aumenta o peso para ficar mais robusto */
+                    font-weight: normal; /* ALTERADO: Removido o negrito */
                     color: {color};
                     line-height: 1.2;
                 '>{count}</div>
