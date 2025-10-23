@@ -122,29 +122,3 @@ if st.session_state.mostrar_sem_retorno:
     else:
         st.warning("Coluna 'NOME' não encontrada na planilha.")
 
-
-# ------------------------------------------------------------
-# ESTILO MATRIX
-# ------------------------------------------------------------
-st.markdown("""
-    <style>
-    .stApp { background-color: #000000; color: #00FF00; font-family: 'Consolas', monospace; }
-    h1, h2, h3 { color: #39FF14 !important; text-shadow: 0 0 5px rgba(57,255,20,0.8); }
-    .stButton>button {
-        background-color: #0d0d0d;
-        border: 2px solid #00FF00;
-        color: #00FF00;
-        font-weight: bold;
-        border-radius: 10px;
-        padding: 15px;
-        font-size: 20px;
-        box-shadow: 0 0 10px rgba(0,255,0,0.5);
-        transition: all 0.2s;
-    }
-    .stButton>button:hover {
-        background-color: #00FF00;
-        color: #000000;
-        box-shadow: 0 0 20px rgba(0,255,0,1);
-    }
-    </style>
-""", unsafe_allow_html=True)
