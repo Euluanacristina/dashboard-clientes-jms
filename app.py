@@ -143,6 +143,64 @@ if resolvido is not None:
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
 
 
+# -----------------------------------------------------------
+# ESTILO VEVERDE
+# -----------------------------------------------------------
+st.markdown(
+    """
+    <style>
+
+    #root, .stApp {
+        min-height: 100vh;
+        height: 100vh; 
+    }
+        .stApp > header {
+        display: none !important;
+    }
+
+    .main {
+        min-height: 100vh;
+    }
+     .stApp {
+        background-color: #000000;
+        color: #00FF00;
+        font-family: 'Consolas', monospace;
+    }
+
+    h1, h2, h3 {
+        color: #39FF14 !important;
+        text-shadow: 0 0 5px rgba(57, 255, 20, 0.8);
+    }
+    .stMarkdown, .css-1aum9i {
+        color: #00FF00 !important;
+    }
+
+    .stMarkdown > p > span {
+        color: #00FF00 !important;
+    }
+
+    /* Estiliza o botão Recarregar */
+    .stButton>button {
+        background-color: #00FF00;
+        color: #000000;
+        border: 1px solid #00FF00;
+        font-weight: bold;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 255, 0, 0.8);
+        transition: all 0.2s;
+    }
+ .stButton>button:hover {
+        background-color: #39FF14;
+        color: #000000;
+        box-shadow: 0 0 15px rgba(0, 255, 0, 1.0);
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+
+
 
 
 
