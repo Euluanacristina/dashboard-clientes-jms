@@ -95,7 +95,7 @@ with col_title:
 
 with col_button:
     st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
-    if st.button("Recarregar Dados", use_container_width=True):
+    if st.button(" 🔄 Recarregar Dados", use_container_width=True):
         carregar_dados_e_processar.clear()
         st.rerun()
 
@@ -143,6 +143,7 @@ if resolvido is not None:
     with col3:
         html_sem_retorno = display_card("Sem Retorno", sem_retorno, "#FF0000")
         st.markdown(html_sem_retorno, unsafe_allow_html=True)
+
 
 
 
