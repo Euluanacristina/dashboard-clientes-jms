@@ -16,15 +16,11 @@ st.set_page_config(
 
 warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 
-# CORREÇÃO: Usando o caminho local 'static/Logo JMS.jpg' (mais robusto)
 LOGO_PATH = "static/Logo JMS.jpg"
-# O link do GitHub pode ser removido ou mantido, mas não será usado abaixo
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg" 
 ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
 
-# ------------------------------------------------------------
-# FUNÇÃO: CARREGAR E PROCESSAR DADOS
-# ------------------------------------------------------------
+
 @st.cache_data(ttl=60)
 def carregar_dados_e_processar():
     COLUNA_STATUS_ESPERADA = 'STATUS DO ATENDIMENTO'
@@ -76,7 +72,6 @@ def carregar_dados_e_processar():
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
 with col_logo:
-    # CORREÇÃO: Usando o caminho local da pasta static
     st.image(LOGO_PATH, caption="", width=100)
 
 with col_title:
@@ -95,7 +90,7 @@ with col_button:
         carregar_dados_e_processar.clear()
         st.rerun()
 
-    # 2. LÓGICA DO BOTÃO "CLIENTES SEM RETORNO"
+    # 2. BOTÃO CLIENTES SEM RETORNO
     if "mostrar_sem_retorno" not in st.session_state:
         st.session_state.mostrar_sem_retorno = False
 
@@ -117,9 +112,9 @@ st.markdown("---")
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
-    # FUNÇÃO display_card com estilo final
+
     def display_card(title, count, color):
-        # Mapeia as cores hex para seus valores RGB para criar um efeito de brilho (glow)
+        # Mapeia as cores e efeito de brilho 
         color_map = {
             "#00FF00": "0, 255, 0",
             "#FFFF00": "255, 255, 0",
@@ -128,7 +123,6 @@ if resolvido is not None:
         rgb_color = color_map.get(color, "255, 255, 255")
         shadow_color = f'rgba({rgb_color}, 0.6)'
 
-        # Define a lista de fontes para garantir um estilo digital/monospace
         font_style = "'Courier New', Courier, monospace"
 
         html_content = f"""
@@ -180,7 +174,8 @@ if st.session_state.mostrar_sem_retorno:
     if col_nome and df_sem_retorno is not None:
         st.dataframe(df_sem_retorno[[col_nome]], use_container_width=True, hide_index=True)
     elif df_sem_retorno is not None and not df_sem_retorno.empty:
-        st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha, exibindo a tabela completa.")
+        st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
+
