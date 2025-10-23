@@ -154,7 +154,15 @@ st.markdown(
         min-height: 100vh;
         height: 100vh; 
     }
+        .stApp > header {
+        display: none !important;
+    }
+
+    .main {
+        min-height: 100vh;
+    }
 )
+
 
 
 
