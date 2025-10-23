@@ -65,11 +65,10 @@ def carregar_dados_e_processar():
 
     except Exception as e:
         st.error("Erro ao carregar dados. Verifique o link da planilha.")
-        # Opcional: st.exception(e) para debug
         return None, 0, 0, 0, 0, None
 
 # ------------------------------------------------------------
-# CABEÇALHO E BOTÕES DE AÇÃO (CORRIGIDO)
+# CABEÇALHO E BOTÕES DE AÇÃO
 # ------------------------------------------------------------
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
@@ -87,20 +86,17 @@ with col_title:
 
 with col_button:
     # 1. BOTÃO RECARREGAR DADOS
-    # Adiciona espaço para alinhar verticalmente
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True) 
+    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
     if st.button("🔄 Recarregar Dados", use_container_width=True):
         carregar_dados_e_processar.clear()
         st.rerun()
 
     # 2. LÓGICA DO BOTÃO "CLIENTES SEM RETORNO"
-    # Inicializa o estado da sessão (necessário antes do botão)
     if "mostrar_sem_retorno" not in st.session_state:
         st.session_state.mostrar_sem_retorno = False
 
     # Botão para mostrar/ocultar painel
-    # Adiciona uma quebra de linha para espaçamento entre os botões
-    st.markdown("<br>", unsafe_allow_html=True) 
+    st.markdown("<br>", unsafe_allow_html=True)
     if st.button("📋 Clientes Sem Retorno", use_container_width=True):
         st.session_state.mostrar_sem_retorno = not st.session_state.mostrar_sem_retorno
 
@@ -117,7 +113,20 @@ st.markdown("---")
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
+    # FUNÇÃO CORRIGIDA COM NOVO ESTILO (FONTE E BRILHO)
     def display_card(title, count, color):
+        # Mapeia as cores hex para seus valores RGB para criar um efeito de brilho (glow)
+        color_map = {
+            "#00FF00": "0, 255, 0",
+            "#FFFF00": "255, 255, 0",
+            "#FF0000": "255, 0, 0",
+        }
+        rgb_color = color_map.get(color, "255, 255, 255") # Fallback para branco
+        shadow_color = f'rgba({rgb_color}, 0.6)'
+
+        # Define a lista de fontes para garantir um estilo digital/monospace
+        font_style = "'Courier New', Courier, monospace"
+
         html_content = f"""
             <div style='
                 background-color: #1a1a1a;
@@ -125,12 +134,18 @@ if resolvido is not None:
                 border-radius: 12px;
                 border: 1px solid {color};
                 text-align: center;
-                box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+                /* Ajusta a sombra para um efeito de brilho mais intenso */
+                box-shadow: 0 0 15px {shadow_color}, 0 0 5px {shadow_color} inset;
                 color: white;
-                font-family: monospace;
+                font-family: {font_style};
             '>
-                <h2 style='color: {color}; margin-top: 0;'>{title}</h2>
-                <div style='font-size: 3em; font-weight: bold; color: {color};'>{count}</div>
+                <h2 style='color: {color}; margin-top: 0; font-family: sans-serif;'>{title}</h2>
+                <div style='
+                    font-size: 3.2em;
+                    font-weight: 900; /* Aumenta o peso para ficar mais robusto */
+                    color: {color};
+                    line-height: 1.2;
+                '>{count}</div>
             </div>
         """
         st.markdown(html_content, unsafe_allow_html=True)
