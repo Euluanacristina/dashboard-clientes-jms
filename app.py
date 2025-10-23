@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from datetime import datetime
-import pytz  
+import pytz
 import warnings
 
 # ------------------------------------------------------------
@@ -10,7 +10,7 @@ import warnings
 st.set_page_config(
     page_title="Dashboard de Clientes JMS",
     page_icon="📊",
-    layout="wide", 
+    layout="wide",
     initial_sidebar_state="collapsed"
 )
 
@@ -65,10 +65,11 @@ def carregar_dados_e_processar():
 
     except Exception as e:
         st.error("Erro ao carregar dados. Verifique o link da planilha.")
+        # Opcional: st.exception(e) para debug
         return None, 0, 0, 0, 0, None
 
 # ------------------------------------------------------------
-# CABEÇALHO
+# CABEÇALHO E BOTÕES DE AÇÃO (CORRIGIDO)
 # ------------------------------------------------------------
 col_logo, col_title, col_button = st.columns([1, 3, 1])
 
@@ -85,10 +86,23 @@ with col_title:
     )
 
 with col_button:
-    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
+    # 1. BOTÃO RECARREGAR DADOS
+    # Adiciona espaço para alinhar verticalmente
+    st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True) 
     if st.button("🔄 Recarregar Dados", use_container_width=True):
         carregar_dados_e_processar.clear()
         st.rerun()
+
+    # 2. LÓGICA DO BOTÃO "CLIENTES SEM RETORNO"
+    # Inicializa o estado da sessão (necessário antes do botão)
+    if "mostrar_sem_retorno" not in st.session_state:
+        st.session_state.mostrar_sem_retorno = False
+
+    # Botão para mostrar/ocultar painel
+    # Adiciona uma quebra de linha para espaçamento entre os botões
+    st.markdown("<br>", unsafe_allow_html=True) 
+    if st.button("📋 Clientes Sem Retorno", use_container_width=True):
+        st.session_state.mostrar_sem_retorno = not st.session_state.mostrar_sem_retorno
 
 # ------------------------------------------------------------
 # EXIBIÇÃO DOS DADOS
@@ -129,28 +143,25 @@ if resolvido is not None:
         display_card("Sem Retorno", sem_retorno, "#FF0000")
 
 # ------------------------------------------------------------
-# BOTÃO "CLIENTES SEM RETORNO"
+# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO"
 # ------------------------------------------------------------
-st.markdown("<br>", unsafe_allow_html=True)
-if "mostrar_sem_retorno" not in st.session_state:
-    st.session_state.mostrar_sem_retorno = False
 
-# Botão para mostrar/ocultar painel
-if st.button("📋 Clientes Sem Retorno", use_container_width=True):
-    st.session_state.mostrar_sem_retorno = not st.session_state.mostrar_sem_retorno
-
-# Exibir painel se ativo
+# Exibir painel se o estado estiver ativo
 if st.session_state.mostrar_sem_retorno:
     st.markdown("### 🧾 Lista de Clientes Sem Retorno:")
-    
+
     # Verifica se há coluna de nome
     col_nome = None
-    for nome_coluna in df_sem_retorno.columns:
-        if 'nome' in nome_coluna.lower():
-            col_nome = nome_coluna
-            break
+    if df_sem_retorno is not None:
+        for nome_coluna in df_sem_retorno.columns:
+            if 'nome' in nome_coluna.lower():
+                col_nome = nome_coluna
+                break
 
-    if col_nome:
+    if col_nome and df_sem_retorno is not None:
         st.dataframe(df_sem_retorno[[col_nome]], use_container_width=True, hide_index=True)
+    elif df_sem_retorno is not None and not df_sem_retorno.empty:
+        st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha, exibindo a tabela completa.")
+        st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
-        st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
+        st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
