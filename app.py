@@ -29,7 +29,7 @@ def carregar_dados_e_processar():
         df = pd.read_csv(
             ARQUIVO_PLANILHA,
             header=0,
-            encoding='latin1',
+            encoding='utf-8',
             sep=',',
             skipinitialspace=True
         )
@@ -178,4 +178,5 @@ if st.session_state.mostrar_sem_retorno:
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
+
 
