@@ -66,6 +66,7 @@ def carregar_dados_e_processar():
         st.error("Erro ao carregar dados. Verifique o link da planilha.")
         return None, 0, 0, 0, 0, None
 
+
 # ------------------------------------------------------------
 # CABEÇALHO E BOTÕES DE AÇÃO
 # ------------------------------------------------------------
@@ -84,20 +85,18 @@ with col_title:
     )
 
 with col_button:
-    # 1. BOTÃO RECARREGAR DADOS
     st.markdown("<div style='height: 40px;'></div>", unsafe_allow_html=True)
     if st.button("🔄 Recarregar Dados", use_container_width=True):
         carregar_dados_e_processar.clear()
         st.rerun()
 
-    # 2. BOTÃO CLIENTES SEM RETORNO
     if "mostrar_sem_retorno" not in st.session_state:
         st.session_state.mostrar_sem_retorno = False
 
-    # Botão para mostrar/ocultar painel
     st.markdown("<br>", unsafe_allow_html=True)
     if st.button("📋 Clientes Sem Retorno", use_container_width=True):
         st.session_state.mostrar_sem_retorno = not st.session_state.mostrar_sem_retorno
+
 
 # ------------------------------------------------------------
 # EXIBIÇÃO DOS DADOS
@@ -113,7 +112,6 @@ if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
     def display_card(title, count, color):
-        # Mapeia as cores e efeito de brilho 
         color_map = {
             "#00FF00": "0, 255, 0",
             "#FFFF00": "255, 255, 0",
@@ -121,7 +119,6 @@ if resolvido is not None:
         }
         rgb_color = color_map.get(color, "255, 255, 255")
         shadow_color = f'rgba({rgb_color}, 0.6)'
-
         font_style = "'Courier New', Courier, monospace"
 
         html_content = f"""
@@ -153,8 +150,9 @@ if resolvido is not None:
     with col3:
         display_card("Sem Retorno", sem_retorno, "#FF0000")
 
+
 # ------------------------------------------------------------
-# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO"
+# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO" (VISUAL DE CARDS)
 # ------------------------------------------------------------
 if st.session_state.mostrar_sem_retorno:
     st.markdown("### 🧾 Lista de Clientes Sem Retorno:")
@@ -167,24 +165,31 @@ if st.session_state.mostrar_sem_retorno:
                 break
 
     if col_nome and df_sem_retorno is not None:
-        # 💄 Estilo compacto da tabela
+        nomes = df_sem_retorno[col_nome].tolist()
+
+        # Adiciona um pequeno CSS para melhorar o espaçamento da lista
         st.markdown("""
             <style>
-            [data-testid="stDataFrame"] table {
-                font-size: 15px;
+            .card-nome {
+                background-color: #1e1e1e;
+                padding: 10px 15px;
+                border-radius: 8px;
+                margin-bottom: 6px;
+                border: 1px solid #444;
+                box-shadow: 0 0 6px rgba(255,255,255,0.08);
+                transition: all 0.2s ease-in-out;
             }
-            [data-testid="stDataFrame"] tbody td {
-                padding: 6px 10px;
+            .card-nome:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 0 10px rgba(255,255,255,0.15);
             }
             </style>
         """, unsafe_allow_html=True)
 
-        st.dataframe(
-            df_sem_retorno[[col_nome]].reset_index(drop=True),
-            use_container_width=True,
-            hide_index=True,
-            height=350  # altura reduzida
-        )
+        # Renderiza cada cliente como um card
+        for nome in nomes:
+            st.markdown(f"<div class='card-nome'><strong style='color:white;'>{nome}</strong></div>", unsafe_allow_html=True)
+
     elif df_sem_retorno is not None and not df_sem_retorno.empty:
         st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
