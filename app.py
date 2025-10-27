@@ -34,12 +34,6 @@ def carregar_dados_e_processar():
             skipinitialspace=True
         )
 
-        # Corrige textos com acentuação errada
-        for col in df.select_dtypes(include=['object']).columns:
-    df[col] = df[col].apply(
-        lambda x: x.encode('latin1').decode('utf-8', errors='ignore') if isinstance(x, str) else x
-    )
-
         df.columns = df.columns.str.strip()
         df_base = df.dropna(how='all')
         total_clientes = len(df_base)
@@ -184,6 +178,7 @@ if st.session_state.mostrar_sem_retorno:
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
+
 
 
 
