@@ -112,7 +112,6 @@ st.markdown("---")
 if resolvido is not None:
     col1, col2, col3 = st.columns(3)
 
-
     def display_card(title, count, color):
         # Mapeia as cores e efeito de brilho 
         color_map = {
@@ -132,7 +131,6 @@ if resolvido is not None:
                 border-radius: 12px;
                 border: 1px solid {color};
                 text-align: center;
-                /* Ajusta a sombra para um efeito de brilho mais intenso */
                 box-shadow: 0 0 15px {shadow_color}, 0 0 5px {shadow_color} inset;
                 color: white;
                 font-family: {font_style};
@@ -158,12 +156,9 @@ if resolvido is not None:
 # ------------------------------------------------------------
 # EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO"
 # ------------------------------------------------------------
-
-# Exibir painel se o estado estiver ativo
 if st.session_state.mostrar_sem_retorno:
     st.markdown("### 🧾 Lista de Clientes Sem Retorno:")
 
-    # Verifica se há coluna de nome
     col_nome = None
     if df_sem_retorno is not None:
         for nome_coluna in df_sem_retorno.columns:
@@ -172,13 +167,26 @@ if st.session_state.mostrar_sem_retorno:
                 break
 
     if col_nome and df_sem_retorno is not None:
-        st.dataframe(df_sem_retorno[[col_nome]], use_container_width=True, hide_index=True)
+        # 💄 Estilo compacto da tabela
+        st.markdown("""
+            <style>
+            [data-testid="stDataFrame"] table {
+                font-size: 15px;
+            }
+            [data-testid="stDataFrame"] tbody td {
+                padding: 6px 10px;
+            }
+            </style>
+        """, unsafe_allow_html=True)
+
+        st.dataframe(
+            df_sem_retorno[[col_nome]].reset_index(drop=True),
+            use_container_width=True,
+            hide_index=True,
+            height=350  # altura reduzida
+        )
     elif df_sem_retorno is not None and not df_sem_retorno.empty:
         st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
-
-
-
-
