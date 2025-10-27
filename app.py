@@ -151,7 +151,7 @@ if resolvido is not None:
 
 
 # ------------------------------------------------------------
-# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO" (VERSÃO 3 - GRID CORRIGIDA)
+# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO" (3 COLUNAS - CORRIGIDO)
 # ------------------------------------------------------------
 if st.session_state.mostrar_sem_retorno:
     st.markdown("### 🧾 Lista de Clientes Sem Retorno:")
@@ -166,14 +166,21 @@ if st.session_state.mostrar_sem_retorno:
     if col_nome and df_sem_retorno is not None:
         nomes = df_sem_retorno[col_nome].tolist()
 
-        # Adiciona estilo CSS para forçar grid de 3 colunas reais
+        # 🔧 CSS: força o layout a ocupar toda a largura e organiza em 3 colunas
         st.markdown("""
             <style>
+            .main .block-container {
+                max-width: 100% !important;
+                padding-left: 5%;
+                padding-right: 5%;
+            }
             .card-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-                gap: 14px;
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 16px;
                 justify-items: center;
+                align-items: start;
+                margin-top: 15px;
                 width: 100%;
             }
             .cliente-card {
@@ -186,31 +193,32 @@ if st.session_state.mostrar_sem_retorno:
                 box-shadow: 0 0 6px rgba(255,255,255,0.08);
                 transition: all 0.25s ease-in-out;
                 width: 100%;
-                max-width: 300px;
+                max-width: 320px;
                 font-weight: 600;
                 text-transform: uppercase;
                 font-size: 14px;
             }
             .cliente-card:hover {
-                transform: scale(1.03);
-                box-shadow: 0 0 12px rgba(255,255,255,0.15);
+                transform: scale(1.05);
+                box-shadow: 0 0 12px rgba(255,255,255,0.2);
             }
             </style>
         """, unsafe_allow_html=True)
 
-        # Renderiza cards com layout responsivo (3 por linha em tela grande)
-        st.markdown("<div class='card-grid'>", unsafe_allow_html=True)
+        # 🧩 Gera os cards no layout de grid (3 por linha em telas grandes)
+        html_cards = "<div class='card-grid'>"
         for nome in nomes:
-            st.markdown(
-                f"<div class='cliente-card'>{nome}</div>",
-                unsafe_allow_html=True
-            )
-        st.markdown("</div>", unsafe_allow_html=True)
+            html_cards += f"<div class='cliente-card'>{nome}</div>"
+        html_cards += "</div>"
+
+        st.markdown(html_cards, unsafe_allow_html=True)
 
     elif df_sem_retorno is not None and not df_sem_retorno.empty:
         st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
         st.dataframe(df_sem_retorno, use_container_width=True, hide_index=True)
     else:
         st.info("🎉 Não há clientes com o status 'Sem Retorno' no momento.")
+
+
 
 
