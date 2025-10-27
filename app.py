@@ -57,7 +57,6 @@ def carregar_dados_e_processar():
         agendada = contagem_status.get('AGENDADA', 0)
         sem_retorno = contagem_status.get('SEM RETORNO', 0)
 
-        # Filtra os clientes "SEM RETORNO"
         df_sem_retorno = df_limpo[df_limpo[COLUNA_STATUS_ESPERADA] == 'SEM RETORNO']
 
         return resolvido, agendada, sem_retorno, total_clientes, df_limpo, df_sem_retorno
@@ -152,7 +151,7 @@ if resolvido is not None:
 
 
 # ------------------------------------------------------------
-# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO" (VISUAL DE CARDS)
+# EXIBIÇÃO DA LISTA "CLIENTES SEM RETORNO" (VERSÃO 3 - GRID)
 # ------------------------------------------------------------
 if st.session_state.mostrar_sem_retorno:
     st.markdown("### 🧾 Lista de Clientes Sem Retorno:")
@@ -167,28 +166,42 @@ if st.session_state.mostrar_sem_retorno:
     if col_nome and df_sem_retorno is not None:
         nomes = df_sem_retorno[col_nome].tolist()
 
-        # Adiciona um pequeno CSS para melhorar o espaçamento da lista
+        # Adiciona estilo CSS moderno
         st.markdown("""
             <style>
-            .card-nome {
-                background-color: #1e1e1e;
-                padding: 10px 15px;
-                border-radius: 8px;
-                margin-bottom: 6px;
-                border: 1px solid #444;
-                box-shadow: 0 0 6px rgba(255,255,255,0.08);
-                transition: all 0.2s ease-in-out;
+            .card-grid {
+                display: flex;
+                flex-wrap: wrap;
+                gap: 12px;
+                justify-content: flex-start;
             }
-            .card-nome:hover {
-                transform: translateY(-2px);
+            .cliente-card {
+                background-color: #1e1e1e;
+                border: 1px solid #444;
+                border-radius: 10px;
+                padding: 15px;
+                color: white;
+                width: 30%;
+                min-width: 250px;
+                text-align: center;
+                box-shadow: 0 0 6px rgba(255,255,255,0.08);
+                transition: all 0.25s ease-in-out;
+            }
+            .cliente-card:hover {
+                transform: translateY(-4px);
                 box-shadow: 0 0 10px rgba(255,255,255,0.15);
             }
             </style>
         """, unsafe_allow_html=True)
 
-        # Renderiza cada cliente como um card
+        # Renderiza os cards em layout de grade (3 por linha)
+        st.markdown("<div class='card-grid'>", unsafe_allow_html=True)
         for nome in nomes:
-            st.markdown(f"<div class='card-nome'><strong style='color:white;'>{nome}</strong></div>", unsafe_allow_html=True)
+            st.markdown(
+                f"<div class='cliente-card'><strong>{nome}</strong></div>",
+                unsafe_allow_html=True
+            )
+        st.markdown("</div>", unsafe_allow_html=True)
 
     elif df_sem_retorno is not None and not df_sem_retorno.empty:
         st.warning("⚠️ Nenhuma coluna de nome encontrada na planilha.")
