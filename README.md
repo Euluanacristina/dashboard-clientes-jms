@@ -65,9 +65,3 @@ A planilha do Google Sheets precisa estar **publicada como CSV** e conter obriga
 
 - Uma coluna chamada `STATUS DO ATENDIMENTO` com os valores: `RESOLVIDO`, `AGENDADA` ou `SEM RETORNO`
 - Uma coluna com `nome` no título (para exibição dos cards de clientes sem retorno)
-
----
-
-## 👩‍💻 Autora
-
-Feito por **Luana Cristina** — [@Euluanacristina](https://github.com/Euluanacristina)
