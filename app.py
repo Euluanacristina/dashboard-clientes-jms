@@ -18,7 +18,7 @@ warnings.simplefilter(action='ignore', category=pd.errors.ParserWarning)
 
 LOGO_PATH = "static/Logo JMS.jpg"
 LOGO_URL_GITHUB = "https://raw.githubusercontent.com/euluanacristina/dashboard-clientes-jms/main/static/Logo%20JMS.jpg" 
-ARQUIVO_PLANILHA = "https://docs.google.com/spreadsheets/d/e/2PACX-1vQbOSJQgaJvTOXAQfB37ISlnvnHZ4Ue5z5mCMHTazn1G0Uttp6DYmJsszYIUz7P2A/pub?gid=466266260&single=true&output=csv"
+ARQUIVO_PLANILHA = ""
 
 
 @st.cache_data(ttl=60)
